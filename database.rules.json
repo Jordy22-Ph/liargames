@@ -41,9 +41,9 @@
             "nickname": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 10" },
             "avatar": {
               ".validate": "newData.hasChildren(['eyes', 'mouth', 'theme'])",
-              "eyes": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4" },
-              "mouth": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4" },
-              "theme": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4" }
+              "eyes": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 7" },
+              "mouth": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 7" },
+              "theme": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 7" }
             }
           }
         },

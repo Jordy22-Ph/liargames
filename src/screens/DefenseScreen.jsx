@@ -3,21 +3,27 @@ import { db } from '../firebase'
 import Avatar from '../components/Avatar'
 import CountdownTimer from '../components/CountdownTimer'
 import ChatPanel from '../components/ChatPanel'
+import { nextRoundOrLiarWin } from '../utils/gameLogic'
 
 export default function DefenseScreen({ room, roomCode, players, myId, isHost, onLeave }) {
   const accused = players.find((p) => p.id === room.defense.topVotedId)
   const me = players.find((p) => p.id === myId)
 
   const finishDefense = () => {
-    const liarCaught = room.round.liarIds.includes(room.defense.topVotedId)
-    update(ref(db, `rooms/${roomCode}`), {
-      status: 'reveal',
-      result: {
-        topVotedId: room.defense.topVotedId,
-        liarCaught,
-        winner: liarCaught ? null : 'liars',
-      },
-    })
+    const topVotedId = room.defense.topVotedId
+    const liarCaught = room.round.liarIds.includes(topVotedId)
+
+    if (liarCaught) {
+      update(ref(db, `rooms/${roomCode}`), {
+        status: 'reveal',
+        result: { topVotedId, liarCaught: true, winner: null },
+      })
+      return
+    }
+
+    // Wrong accusation — another discussion round starts instead of an
+    // immediate liar win, unless the round cap has already been reached.
+    update(ref(db, `rooms/${roomCode}`), nextRoundOrLiarWin(room.round, topVotedId))
   }
 
   return (

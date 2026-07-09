@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { ref, set, update } from 'firebase/database'
 import { db } from '../firebase'
 import Avatar from '../components/Avatar'
-import { DEFENSE_DURATION_MS } from '../utils/gameLogic'
+import { DEFENSE_DURATION_MS, nextRoundOrLiarWin } from '../utils/gameLogic'
 
 function tallyVotes(votes) {
   const tally = {}
@@ -39,10 +39,9 @@ export default function VotingScreen({ room, roomCode, players, myId, isHost, on
 
     if (topVotedId === null) {
       // Tie — nobody is pinned down, so there's no one to give a final defense.
-      update(ref(db, `rooms/${roomCode}`), {
-        status: 'reveal',
-        result: { topVotedId: null, liarCaught: false, winner: 'liars' },
-      })
+      // Treat it the same as failing to catch the liar: another round, or a
+      // default liar win once the round cap is reached.
+      update(ref(db, `rooms/${roomCode}`), nextRoundOrLiarWin(room.round, null))
       return
     }
 
@@ -66,6 +65,7 @@ export default function VotingScreen({ room, roomCode, players, myId, isHost, on
   return (
     <div className="mx-auto flex min-h-svh max-w-md flex-col gap-6 px-6 py-10">
       <header className="text-center">
+        <p className="text-xs text-white/40">{room.round.roundNumber}라운드</p>
         <h1 className="text-2xl font-bold text-white">라이어로 의심되는 사람을 지목하세요</h1>
         <p className="mt-1 text-sm text-white/50">{votedCount}/{players.length}명 투표 완료</p>
       </header>

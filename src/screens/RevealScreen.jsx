@@ -79,18 +79,33 @@ export default function RevealScreen({ room, roomCode, players, myId, isHost, on
         <p className="text-sm text-white/50">라이어가 제시어를 추측하는 중...</p>
       )}
 
-      {result.winner && (
-        <div className="flex flex-col gap-1 rounded-2xl bg-violet-500/15 p-5 ring-1 ring-violet-400/40">
-          <h2 className="text-xl font-bold text-white">
-            {result.winner === 'citizens' ? '🎉 시민 승리!' : '🕵️ 라이어 승리!'}
-          </h2>
-          <p className="text-sm text-white/70">
-            제시어: {round.word}
-            {round.similarWord && ` (라이어 제시어: ${round.similarWord})`}
-          </p>
-          <p className="text-sm text-white/70">라이어: {liarNicknames.join(', ')}</p>
-        </div>
-      )}
+      {result.winner && (() => {
+        const winners =
+          result.winner === 'liars'
+            ? players.filter((p) => round.liarIds.includes(p.id))
+            : players.filter((p) => !round.liarIds.includes(p.id))
+        const title =
+          result.winner === 'liars' ? `${winners.map((p) => p.nickname).join(', ')} WIN!!` : '시민 WIN!!'
+
+        return (
+          <div className="flex flex-col items-center gap-3 rounded-2xl bg-violet-500/15 p-5 ring-1 ring-violet-400/40">
+            <div className="flex flex-wrap justify-center gap-3">
+              {winners.map((p) => (
+                <div key={p.id} className="flex flex-col items-center gap-1">
+                  <Avatar avatar={p.avatar} size={56} />
+                  <p className="text-xs text-white">{p.nickname}</p>
+                </div>
+              ))}
+            </div>
+            <h2 className="text-2xl font-bold text-white">{title}</h2>
+            <p className="text-sm text-white/70">
+              제시어: {round.word}
+              {round.similarWord && ` (라이어 제시어: ${round.similarWord})`}
+            </p>
+            <p className="text-sm text-white/70">라이어: {liarNicknames.join(', ')}</p>
+          </div>
+        )
+      })()}
 
       {isHost && result.winner && (
         <button

@@ -4,6 +4,7 @@ const ROOM_CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
 
 export const ROUND_DURATION_MS = 5 * 60 * 1000
 export const DEFENSE_DURATION_MS = 60 * 1000
+export const MAX_ROUNDS = 3
 
 export function generateRoomCode(length = 5) {
   let code = ''
@@ -60,5 +61,28 @@ export function assignRound(categoryId, mode, userIds) {
     wordByUser,
     word: entry.word,
     similarWord: mode === 'hard' ? entry.similar : null,
+    roundNumber: 1,
+  }
+}
+
+/**
+ * Called whenever a vote fails to pin down the liar (a tie, or the accused
+ * turns out to be innocent). Below the round cap, the same secret word/liar
+ * assignment carries into a fresh discussion round; at the cap, the liar
+ * wins by default since the citizens ran out of chances to catch them.
+ */
+export function nextRoundOrLiarWin(round, topVotedId) {
+  if (round.roundNumber >= MAX_ROUNDS) {
+    return {
+      status: 'reveal',
+      result: { topVotedId, liarCaught: false, winner: 'liars' },
+    }
+  }
+
+  return {
+    status: 'playing',
+    round: { ...round, roundNumber: round.roundNumber + 1, endsAt: Date.now() + ROUND_DURATION_MS },
+    votes: null,
+    defense: null,
   }
 }

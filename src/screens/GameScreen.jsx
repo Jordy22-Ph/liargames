@@ -15,7 +15,9 @@ export default function GameScreen({ room, roomCode, players, myId, isHost, onLe
   return (
     <div className="mx-auto flex min-h-svh max-w-5xl flex-col gap-4 px-4 py-6">
       <header className="flex items-center justify-between">
-        <p className="text-xs tracking-widest text-white/40">방 코드 {roomCode}</p>
+        <p className="text-xs tracking-widest text-white/40">
+          방 코드 {roomCode} · {room.round.roundNumber}라운드
+        </p>
         <div className="flex gap-2">
           {isHost && (
             <button
@@ -37,7 +39,7 @@ export default function GameScreen({ room, roomCode, players, myId, isHost, onLe
       </header>
 
       <section className="rounded-2xl bg-white/5 p-4">
-        <PlayerPodiums players={players} myId={myId} />
+        <PlayerPodiums players={players} myId={myId} hostId={room.hostId} />
       </section>
 
       <section className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-3 md:[&>*]:h-80">

@@ -51,7 +51,19 @@ export default function LobbyScreen({ roomCode, onExit }) {
   const canStart = isHost && players.length >= MIN_PLAYERS && room.status === 'lobby'
 
   const handleLeave = async () => {
-    if (isHost) {
+    const remaining = players.filter((p) => p.id !== uid)
+    if (isHost && remaining.length > 0) {
+      // Hand off hosting to whoever joined earliest among those staying, so the
+      // room and everyone still in it survive the host leaving mid-game.
+      // Only "users/{uid}" (self) and "hostId" (room-root, host-gated) can be
+      // touched here — a departing host can't also write nextHost's own user
+      // record, since that path's write rule only lets that user write it.
+      const nextHost = remaining[0]
+      await update(ref(db, `rooms/${roomCode}`), {
+        [`users/${uid}`]: null,
+        hostId: nextHost.id,
+      })
+    } else if (isHost) {
       await remove(ref(db, `rooms/${roomCode}`))
     } else {
       await remove(ref(db, `rooms/${roomCode}/users/${uid}`))
@@ -154,7 +166,7 @@ export default function LobbyScreen({ roomCode, onExit }) {
                 <>
                   <Avatar avatar={player.avatar} size={56} />
                   <p className="truncate text-xs text-white">
-                    {player.nickname} {player.isHost && '👑'}
+                    {player.nickname} {player.id === room.hostId && '👑'}
                   </p>
                 </>
               ) : (
