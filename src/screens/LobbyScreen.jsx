@@ -183,21 +183,32 @@ export default function LobbyScreen({ roomCode, onExit }) {
       <section className="rounded-2xl bg-white/5 p-5">
         <p className="mb-3 text-sm font-medium text-white/70">주제 선택</p>
         <div className="flex flex-wrap gap-2">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              type="button"
-              disabled={!isHost}
-              onClick={() => handleCategoryChange(cat.id)}
-              className={`rounded-full px-4 py-1.5 text-sm transition ${
-                room.settings.categoryId === cat.id
-                  ? 'bg-violet-500 text-white'
-                  : 'bg-white/10 text-white/60'
-              } ${isHost ? 'hover:bg-violet-400/70' : 'cursor-not-allowed opacity-60'}`}
-            >
-              {cat.name}
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const categoryButton = (
+              <button
+                type="button"
+                disabled={!isHost}
+                onClick={() => handleCategoryChange(cat.id)}
+                className={`rounded-full px-4 py-1.5 text-sm transition ${
+                  room.settings.categoryId === cat.id
+                    ? 'bg-violet-500 text-white'
+                    : 'bg-white/10 text-white/60'
+                } ${isHost ? 'hover:bg-violet-400/70' : 'cursor-not-allowed opacity-60'}`}
+              >
+                {cat.name}
+              </button>
+            )
+
+            if (!cat.description) {
+              return <span key={cat.id}>{categoryButton}</span>
+            }
+
+            return (
+              <Tooltip key={cat.id} text={cat.description}>
+                {categoryButton}
+              </Tooltip>
+            )
+          })}
         </div>
 
         <p className="mb-3 mt-5 text-sm font-medium text-white/70">모드 선택</p>
