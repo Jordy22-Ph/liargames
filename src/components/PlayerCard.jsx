@@ -2,17 +2,7 @@ import { motion } from 'framer-motion'
 import Avatar from './Avatar'
 import PlayerReactionBubble from './PlayerReactionBubble'
 
-export default function PlayerCard({ player, isHostPlayer, isMe, reaction, onToggleReady }) {
-  const readyBadge = (
-    <span
-      className={`rounded-full px-2 py-0.5 text-[10px] font-medium transition ${
-        player.ready ? 'bg-emerald-500/20 text-emerald-300' : 'bg-white/10 text-white/50'
-      }`}
-    >
-      {player.ready ? '✅ 준비 완료' : '⏳ 대기 중'}
-    </span>
-  )
-
+export default function PlayerCard({ player, isHostPlayer, reaction }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.85 }}
@@ -26,13 +16,6 @@ export default function PlayerCard({ player, isHostPlayer, isMe, reaction, onTog
       <p className="truncate text-xs text-white">
         {player.nickname} {isHostPlayer && '👑'}
       </p>
-      {isMe ? (
-        <button type="button" onClick={onToggleReady}>
-          {readyBadge}
-        </button>
-      ) : (
-        readyBadge
-      )}
     </motion.div>
   )
 }

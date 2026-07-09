@@ -60,8 +60,7 @@ export default function LobbyScreen({ roomCode, onExit }) {
   const isHost = room.hostId === uid
   const categories = getCategories()
   const me = players.find((p) => p.id === uid)
-  const allReady = players.length > 0 && players.every((p) => p.ready)
-  const canStart = isHost && players.length >= MIN_PLAYERS && allReady && room.status === 'lobby'
+  const canStart = isHost && players.length >= MIN_PLAYERS && room.status === 'lobby'
 
   const handleLeave = async () => {
     const remaining = players.filter((p) => p.id !== uid)
@@ -97,10 +96,6 @@ export default function LobbyScreen({ roomCode, onExit }) {
     const round = assignRound(room.settings.categoryId, room.settings.mode, userIds)
     round.endsAt = Date.now() + ROUND_DURATION_MS
     update(ref(db, `rooms/${roomCode}`), { status: 'playing', round })
-  }
-
-  const handleToggleReady = () => {
-    update(ref(db, `rooms/${roomCode}/users/${uid}`), { ready: !me?.ready })
   }
 
   const handleReact = (emoji) => {
@@ -164,13 +159,8 @@ export default function LobbyScreen({ roomCode, onExit }) {
     )
   }
 
-  const readyCount = players.filter((p) => p.ready).length
-  let startLabel = '게임 시작'
-  if (players.length < MIN_PLAYERS) {
-    startLabel = `최소 ${MIN_PLAYERS}명 필요 (${players.length}/${MIN_PLAYERS})`
-  } else if (!allReady) {
-    startLabel = `모두 준비 완료를 기다리는 중 (${readyCount}/${players.length})`
-  }
+  const startLabel =
+    players.length < MIN_PLAYERS ? `최소 ${MIN_PLAYERS}명 필요 (${players.length}/${MIN_PLAYERS})` : '게임 시작'
 
   return (
     <div className="mx-auto flex min-h-svh max-w-2xl flex-col gap-6 px-6 py-8">
@@ -208,9 +198,7 @@ export default function LobbyScreen({ roomCode, onExit }) {
               key={player.id}
               player={player}
               isHostPlayer={player.id === room.hostId}
-              isMe={player.id === uid}
               reaction={room.reactions?.[player.id]}
-              onToggleReady={handleToggleReady}
             />
           ))}
         </AnimatePresence>

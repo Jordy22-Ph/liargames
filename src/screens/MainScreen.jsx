@@ -38,7 +38,6 @@ export default function MainScreen({ onEnterLobby, initialJoinCode }) {
     nickname: nickname.trim(),
     avatar,
     isHost,
-    ready: false,
     joinedAt: serverTimestamp(),
   })
 

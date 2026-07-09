@@ -36,10 +36,9 @@
             // the console rules linter chokes on numChildren() through a .parent()
             // chain, so we don't duplicate that check here.
             ".write": "auth != null && auth.uid === $uid",
-            ".validate": "newData.hasChildren(['nickname', 'avatar', 'isHost', 'joinedAt', 'ready'])",
+            ".validate": "newData.hasChildren(['nickname', 'avatar', 'isHost', 'joinedAt'])",
 
             "nickname": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 10" },
-            "ready": { ".validate": "newData.isBoolean()" },
             "avatar": {
               ".validate": "newData.hasChildren(['eyes', 'mouth', 'theme'])",
               "eyes": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 7" },
