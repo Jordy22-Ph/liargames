@@ -3,6 +3,7 @@ import topicsData from '../data/topics.json'
 const ROOM_CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
 
 export const ROUND_DURATION_MS = 5 * 60 * 1000
+export const DEFENSE_DURATION_MS = 60 * 1000
 
 export function generateRoomCode(length = 5) {
   let code = ''

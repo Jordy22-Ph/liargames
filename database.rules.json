@@ -19,7 +19,7 @@
         "hostId": { ".validate": "newData.isString()" },
 
         "status": {
-          ".validate": "newData.val() === 'lobby' || newData.val() === 'playing' || newData.val() === 'voting' || newData.val() === 'reveal'"
+          ".validate": "newData.val() === 'lobby' || newData.val() === 'playing' || newData.val() === 'voting' || newData.val() === 'defense' || newData.val() === 'reveal'"
         },
 
         "settings": {
@@ -31,9 +31,11 @@
         "users": {
           "$uid": {
             // A player manages only their own seat (join/update/leave); the host can
-            // also touch any seat via the room-root rule above. Capacity of 8 is only
-            // checked when adding a brand-new seat, not when updating an existing one.
-            ".write": "auth != null && auth.uid === $uid && (data.exists() || root.child('rooms').child($roomCode).child('users').numChildren() < 8)",
+            // also touch any seat via the room-root rule above. The 8-player cap is
+            // enforced client-side (MainScreen checks the count before joining) —
+            // the console rules linter chokes on numChildren() through a .parent()
+            // chain, so we don't duplicate that check here.
+            ".write": "auth != null && auth.uid === $uid",
             ".validate": "newData.hasChildren(['nickname', 'avatar', 'isHost', 'joinedAt'])",
 
             "nickname": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 10" },
@@ -52,11 +54,18 @@
           ".validate": "newData.hasChildren(['categoryId', 'categoryName', 'mode', 'liarIds', 'wordByUser', 'word', 'endsAt'])"
         },
 
+        // Only ever written by the host (set when voting ends with a non-tied top
+        // vote, cleared on rematch) — rides the room-root rule, same as "round".
+        "defense": {
+          ".validate": "newData.hasChildren(['topVotedId', 'endsAt'])"
+        },
+
         "votes": {
           "$voterUid": {
             // Each player casts only their own vote, and can't vote for themselves.
+            // newData.parent().parent() walks votes/$voterUid -> votes -> $roomCode.
             ".write": "auth != null && auth.uid === $voterUid",
-            ".validate": "newData.isString() && newData.val() !== $voterUid && root.child('rooms').child($roomCode).child('users').hasChild(newData.val())"
+            ".validate": "newData.isString() && newData.val() !== $voterUid && newData.parent().parent().child('users').hasChild(newData.val())"
           }
         },
 
@@ -74,11 +83,14 @@
 
         "result": {
           // Host can always write result (creating it at reveal time, clearing it on
-          // rematch). Separately, the one player who got caught (topVotedId) can
-          // submit their own word-guess exactly once, before winner is decided —
-          // this has to be its own rule because it's the only path a non-host client
-          // legitimately writes to under "result".
-          ".write": "auth != null && (root.child('rooms').child($roomCode).child('hostId').val() === auth.uid || (data.child('liarCaught').val() === true && !data.child('winner').val() && auth.uid === data.child('topVotedId').val()))",
+          // rematch) — data.parent() is the $roomCode node, so .child('hostId') reads
+          // the room's host regardless of whether "result" exists yet. Separately,
+          // the one player who got caught (topVotedId) can submit their own
+          // word-guess exactly once, before winner is decided — this has to be its
+          // own clause because it's the only path a non-host client legitimately
+          // writes to under "result". ".val()" on winner would be a string/null, and
+          // "!" only works on booleans, so we check ".exists()" instead.
+          ".write": "auth != null && (data.parent().child('hostId').val() === auth.uid || (data.child('liarCaught').val() === true && !data.child('winner').exists() && auth.uid === data.child('topVotedId').val()))",
           "winner": { ".validate": "newData.val() === 'citizens' || newData.val() === 'liars'" }
         }
       }

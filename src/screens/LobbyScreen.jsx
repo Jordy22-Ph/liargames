@@ -7,6 +7,7 @@ import { getCategories, assignRound, ROUND_DURATION_MS } from '../utils/gameLogi
 import { getClientId } from '../utils/identity'
 import GameScreen from './GameScreen'
 import VotingScreen from './VotingScreen'
+import DefenseScreen from './DefenseScreen'
 import RevealScreen from './RevealScreen'
 
 const MAX_PLAYERS = 8
@@ -89,6 +90,19 @@ export default function LobbyScreen({ roomCode, onExit }) {
   if (room.status === 'voting' && room.round) {
     return (
       <VotingScreen
+        room={room}
+        roomCode={roomCode}
+        players={players}
+        myId={uid}
+        isHost={isHost}
+        onLeave={handleLeave}
+      />
+    )
+  }
+
+  if (room.status === 'defense' && room.round && room.defense) {
+    return (
+      <DefenseScreen
         room={room}
         roomCode={roomCode}
         players={players}

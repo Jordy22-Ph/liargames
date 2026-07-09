@@ -10,7 +10,28 @@
         { "word": "떡볶이", "similar": "순대" },
         { "word": "초밥", "similar": "회" },
         { "word": "피자", "similar": "파스타" },
-        { "word": "치킨", "similar": "핫도그" }
+        { "word": "치킨", "similar": "핫도그" },
+        { "word": "파스타", "similar": "국수" },
+        { "word": "삼겹살", "similar": "갈비" },
+        { "word": "팬케이크", "similar": "와플" },
+        { "word": "쿠키", "similar": "브라우니" },
+        { "word": "국", "similar": "찌개" },
+        { "word": "샐러드", "similar": "샌드위치" },
+        { "word": "감자튀김", "similar": "감자칩" },
+        { "word": "케첩", "similar": "머스터드" },
+        { "word": "와인", "similar": "샴페인" },
+        { "word": "레모네이드", "similar": "오렌지 주스" },
+        { "word": "치즈", "similar": "버터" },
+        { "word": "요거트", "similar": "아이스크림" },
+        { "word": "머핀", "similar": "컵케이크" },
+        { "word": "치킨", "similar": "백숙" },
+        { "word": "새우", "similar": "랍스터" },
+        { "word": "베이컨", "similar": "소시지" },
+        { "word": "커피", "similar": "녹차" },
+        { "word": "초밥", "similar": "라면" },
+        { "word": "소주", "similar": "맥주" },
+        { "word": "햄버거", "similar": "샌드위치" },
+        { "word": "포도", "similar": "딸기" }
       ]
     },
     {
@@ -36,7 +57,8 @@
         { "word": "스마트워치", "similar": "스마트밴드" },
         { "word": "냉장고", "similar": "김치냉장고" },
         { "word": "청소기", "similar": "로봇청소기" },
-        { "word": "에어컨", "similar": "선풍기" }
+        { "word": "에어컨", "similar": "선풍기" },
+        { "word": "노트북", "similar": "태블릿" }
       ]
     },
     {
@@ -49,7 +71,27 @@
         { "word": "펭귄", "similar": "물개" },
         { "word": "토끼", "similar": "고양이" },
         { "word": "다람쥐", "similar": "햄스터" },
-        { "word": "부엉이", "similar": "까마귀" }
+        { "word": "부엉이", "similar": "까마귀" },
+        { "word": "돌고래", "similar": "고래" },
+        { "word": "코끼리", "similar": "코뿔소" },
+        { "word": "얼룩말", "similar": "말" },
+        { "word": "고릴라", "similar": "침팬지" },
+        { "word": "캥거루", "similar": "코알라" },
+        { "word": "흑표범", "similar": "재규어" },
+        { "word": "독수리", "similar": "매" },
+        { "word": "도마뱀", "similar": "카멜레온" },
+        { "word": "뱀", "similar": "살모사" },
+        { "word": "토끼", "similar": "다람쥐" },
+        { "word": "개구리", "similar": "두꺼비" },
+        { "word": "곰", "similar": "북극곰" },
+        { "word": "늑대", "similar": "여우" },
+        { "word": "앵무새", "similar": "참새" },
+        { "word": "치타", "similar": "표범" },
+        { "word": "바다거북", "similar": "육지거북" },
+        { "word": "나방", "similar": "나비" },
+        { "word": "말벌", "similar": "꿀벌" },
+        { "word": "돌고래", "similar": "상어" },
+        { "word": "거미", "similar": "전갈" }
       ]
     },
     {
@@ -62,7 +104,173 @@
         { "word": "탁구", "similar": "배드민턴" },
         { "word": "수영", "similar": "다이빙" },
         { "word": "볼링", "similar": "당구" },
-        { "word": "테니스", "similar": "스쿼시" }
+        { "word": "테니스", "similar": "스쿼시" },
+        { "word": "메시", "similar": "호날두" },
+        { "word": "테니스", "similar": "배드민턴" },
+        { "word": "손흥민", "similar": "이강인" },
+        { "word": "FC 온라인", "similar": "리그 오브 레전드" },
+        { "word": "LG 트윈스", "similar": "두산 베어스" },
+        { "word": "투수", "similar": "포수" },
+        { "word": "K리그", "similar": "프리미어리그" },
+        { "word": "김연아", "similar": "손연재" },
+        { "word": "쇼트트랙", "similar": "스피드 스케이팅" },
+        { "word": "심판", "similar": "선심" },
+        { "word": "홈런", "similar": "안타" },
+        { "word": "골키퍼", "similar": "수비수" },
+        { "word": "마라톤", "similar": "단거리 달리기" }
+      ]
+    },
+    {
+      "id": "movie",
+      "name": "영화",
+      "words": [
+        { "word": "인셉션", "similar": "인터스텔라" },
+        { "word": "타이타닉", "similar": "아바타" },
+        { "word": "조커", "similar": "배트맨" },
+        { "word": "마블", "similar": "DC" },
+        { "word": "어벤져스", "similar": "저스티스 리그" },
+        { "word": "해리포터", "similar": "반지의 제왕" },
+        { "word": "범죄도시", "similar": "베테랑" },
+        { "word": "스파이더맨", "similar": "아이언맨" },
+        { "word": "신과함께", "similar": "부산행" },
+        { "word": "극한직업", "similar": "엑시트" },
+        { "word": "기생충", "similar": "올드보이" },
+        { "word": "픽사", "similar": "디즈니" },
+        { "word": "쥬라기 공원", "similar": "쥬라기 월드" }
+      ]
+    },
+    {
+      "id": "anime",
+      "name": "애니메이션",
+      "words": [
+        { "word": "나루토", "similar": "사스케" },
+        { "word": "손오공", "similar": "베지터" },
+        { "word": "루피", "similar": "조로" },
+        { "word": "데스노트", "similar": "진격의 거인" },
+        { "word": "원피스", "similar": "드래곤볼" },
+        { "word": "주술회전", "similar": "체인소 맨" },
+        { "word": "귀멸의 칼날", "similar": "나의 히어로 아카데미아" },
+        { "word": "최애의 아이", "similar": "스파이 패밀리" },
+        { "word": "하이큐!!", "similar": "쿠로코의 농구" },
+        { "word": "강철의 연금술사", "similar": "헌터x헌터" },
+        { "word": "세일러문", "similar": "카드캡터 체리" },
+        { "word": "에렌", "similar": "리바이" },
+        { "word": "고죠 사토루", "similar": "이타도리 유지" }
+      ]
+    },
+    {
+      "id": "kpop",
+      "name": "음악 & K-팝",
+      "words": [
+        { "word": "아이유", "similar": "태연" },
+        { "word": "빅뱅", "similar": "엑소" },
+        { "word": "뉴진스", "similar": "아이브" },
+        { "word": "블랙핑크", "similar": "트와이스" },
+        { "word": "힙합", "similar": "발라드" },
+        { "word": "방탄소년단(BTS)", "similar": "세븐틴" },
+        { "word": "멜론", "similar": "유튜브 뮤직" },
+        { "word": "에스파", "similar": "르세라핌" },
+        { "word": "데이식스", "similar": "실리카겔" },
+        { "word": "빈지노", "similar": "지코" },
+        { "word": "트로트", "similar": "인디음악" },
+        { "word": "성시경", "similar": "박효신" },
+        { "word": "악뮤(AKMU)", "similar": "볼빨간사춘기" }
+      ]
+    },
+    {
+      "id": "celebrity",
+      "name": "연예인 & 유명인",
+      "words": [
+        { "word": "유재석", "similar": "강호동" },
+        { "word": "정우성", "similar": "이정재" },
+        { "word": "한소희", "similar": "고윤정" },
+        { "word": "마동석", "similar": "손석구" },
+        { "word": "공유", "similar": "이동욱" },
+        { "word": "박보영", "similar": "김지원" },
+        { "word": "차은우", "similar": "변우석" },
+        { "word": "덱스", "similar": "기안84" },
+        { "word": "나영석", "similar": "김태호" },
+        { "word": "일론 머스크", "similar": "마크 저커버그" },
+        { "word": "장원영", "similar": "카리나" },
+        { "word": "송강호", "similar": "최민식" },
+        { "word": "이효리", "similar": "엄정화" }
+      ]
+    },
+    {
+      "id": "place",
+      "name": "장소 & 지리",
+      "words": [
+        { "word": "파리", "similar": "런던" },
+        { "word": "서울", "similar": "부산" },
+        { "word": "바다", "similar": "사막" },
+        { "word": "산", "similar": "화산" },
+        { "word": "섬", "similar": "반도" },
+        { "word": "제주도", "similar": "울릉도" },
+        { "word": "도쿄", "similar": "오사카" },
+        { "word": "이탈리아", "similar": "스페인" },
+        { "word": "이집트", "similar": "그리스" },
+        { "word": "숲", "similar": "정글" },
+        { "word": "공항", "similar": "기차역" },
+        { "word": "호텔", "similar": "펜션" },
+        { "word": "공원", "similar": "식물원" },
+        { "word": "박물관", "similar": "미술관" },
+        { "word": "경기장", "similar": "체육관" }
+      ]
+    },
+    {
+      "id": "brand",
+      "name": "브랜드",
+      "words": [
+        { "word": "나이키", "similar": "아디다스" },
+        { "word": "맥도날드", "similar": "버거킹" },
+        { "word": "애플", "similar": "삼성" },
+        { "word": "코카콜라", "similar": "펩시" },
+        { "word": "쿠팡", "similar": "네이버 쇼핑" },
+        { "word": "현대", "similar": "기아" },
+        { "word": "벤츠", "similar": "BMW" },
+        { "word": "카카오", "similar": "라인" },
+        { "word": "맘스터치", "similar": "롯데리아" },
+        { "word": "스타벅스", "similar": "메가커피" },
+        { "word": "에버랜드", "similar": "롯데월드" },
+        { "word": "인스타그램", "similar": "X (트위터)" },
+        { "word": "이마트", "similar": "홈플러스" },
+        { "word": "넷플릭스", "similar": "티빙" },
+        { "word": "멜론", "similar": "지니뮤직" },
+        { "word": "넷플릭스", "similar": "유튜브" },
+        { "word": "인스타그램", "similar": "틱톡" },
+        { "word": "네이버", "similar": "구글" },
+        { "word": "플레이스테이션", "similar": "닌텐도 스위치" }
+      ]
+    },
+    {
+      "id": "hardcore",
+      "name": "고인물 매운맛",
+      "words": [
+        { "word": "아메리카노", "similar": "카페라떼" },
+        { "word": "첼로", "similar": "바이올린" },
+        { "word": "오징어", "similar": "한치" },
+        { "word": "삼겹살", "similar": "목살" },
+        { "word": "치타", "similar": "표범" },
+        { "word": "김치찌개", "similar": "된장찌개" },
+        { "word": "브로콜리", "similar": "컬리플라워" },
+        { "word": "바다거북", "similar": "육지거북" },
+        { "word": "나방", "similar": "나비" },
+        { "word": "말벌", "similar": "꿀벌" },
+        { "word": "밀크티", "similar": "버블티" },
+        { "word": "패러글라이딩", "similar": "스카이다이빙" },
+        { "word": "단소", "similar": "리코더" },
+        { "word": "잡지", "similar": "신문" },
+        { "word": "스케이트보드", "similar": "롱보드" },
+        { "word": "침대", "similar": "소파" },
+        { "word": "태풍", "similar": "토네이도" },
+        { "word": "혜성", "similar": "유성" },
+        { "word": "성당", "similar": "교회" },
+        { "word": "짜장면", "similar": "간짜장" },
+        { "word": "해파리", "similar": "문어" },
+        { "word": "연어", "similar": "참치" },
+        { "word": "베이글", "similar": "도넛" },
+        { "word": "깻잎", "similar": "고수" },
+        { "word": "떡볶이", "similar": "마라탕" }
       ]
     }
   ]

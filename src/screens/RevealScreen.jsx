@@ -26,7 +26,7 @@ export default function RevealScreen({ room, roomCode, players, myId, isHost, on
   }
 
   const rematch = () => {
-    update(ref(db, `rooms/${roomCode}`), { status: 'lobby', round: null, votes: null, result: null })
+    update(ref(db, `rooms/${roomCode}`), { status: 'lobby', round: null, votes: null, defense: null, result: null })
   }
 
   return (

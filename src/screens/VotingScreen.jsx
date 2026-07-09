@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { ref, set, update } from 'firebase/database'
 import { db } from '../firebase'
 import Avatar from '../components/Avatar'
+import { DEFENSE_DURATION_MS } from '../utils/gameLogic'
 
 function tallyVotes(votes) {
   const tally = {}
@@ -32,19 +33,28 @@ export default function VotingScreen({ room, roomCode, players, myId, isHost, on
   const myVote = votes[myId]
   const votedCount = Object.keys(votes).length
 
-  const reveal = () => {
+  const finalizeVote = () => {
     const tally = tallyVotes(votes)
     const topVotedId = pickTopVoted(tally)
-    const liarCaught = topVotedId !== null && room.round.liarIds.includes(topVotedId)
+
+    if (topVotedId === null) {
+      // Tie — nobody is pinned down, so there's no one to give a final defense.
+      update(ref(db, `rooms/${roomCode}`), {
+        status: 'reveal',
+        result: { topVotedId: null, liarCaught: false, winner: 'liars' },
+      })
+      return
+    }
+
     update(ref(db, `rooms/${roomCode}`), {
-      status: 'reveal',
-      result: { topVotedId, liarCaught, winner: liarCaught ? null : 'liars' },
+      status: 'defense',
+      defense: { topVotedId, endsAt: Date.now() + DEFENSE_DURATION_MS },
     })
   }
 
   useEffect(() => {
     if (isHost && votedCount >= players.length && players.length > 0) {
-      reveal()
+      finalizeVote()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHost, votedCount, players.length])
@@ -81,7 +91,7 @@ export default function VotingScreen({ room, roomCode, players, myId, isHost, on
       {isHost && (
         <button
           type="button"
-          onClick={reveal}
+          onClick={finalizeVote}
           className="rounded-xl bg-violet-500 py-3 font-semibold text-white transition hover:bg-violet-400"
         >
           투표 마감 &amp; 결과 보기
