@@ -8,7 +8,6 @@ import Toast from '../components/Toast'
 import RoomCodeCard from '../components/RoomCodeCard'
 import PlayerCard from '../components/PlayerCard'
 import ReactionBar from '../components/ReactionBar'
-import LobbyChat from '../components/LobbyChat'
 import CharacterCustomizer from '../components/CharacterCustomizer'
 import { useToast } from '../hooks/useToast'
 import { DEFAULT_AVATAR } from '../data/avatarOptions'
@@ -312,7 +311,6 @@ export default function LobbyScreen({ roomCode, onExit }) {
         </div>
       </Modal>
 
-      <LobbyChat roomCode={roomCode} myId={uid} myNickname={me?.nickname ?? ''} />
       <Toast message={toastMessage} />
     </div>
   )
