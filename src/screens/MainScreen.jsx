@@ -246,6 +246,27 @@ export default function MainScreen({ onEnterLobby, initialJoinCode }) {
         </motion.div>
       </div>
 
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="relative z-10 mx-auto w-full max-w-2xl px-6 pb-16"
+      >
+        <h2 className="text-center text-lg font-semibold text-white">라이어 게임이란?</h2>
+        <p className="mx-auto mt-2 max-w-md text-center text-sm leading-relaxed text-[#A8A8B8]">
+          라이어 게임은 친구들과 온라인으로 즐기는 눈치 게임이에요. 회원가입 없이 닉네임만 정하면 바로 시작할 수
+          있고, 최대 8명까지 방을 만들어 함께 플레이할 수 있어요.
+        </p>
+
+        <h3 className="mt-8 text-center text-sm font-semibold text-white">라이어 게임 플레이 방법</h3>
+        <div className="mx-auto mt-3 flex max-w-md flex-col gap-2 text-sm text-[#A8A8B8]">
+          <p>1. 닉네임과 캐릭터를 정하고 방을 만들어요.</p>
+          <p>2. 방 코드나 초대 링크를 친구들에게 공유해요.</p>
+          <p>3. 같은 주제의 제시어를 받아요 — 라이어만 혼자 다른 제시어를 받아요.</p>
+          <p>4. 토론 후 투표로 라이어를 지목해요. 맞히면 시민 승리, 못 맞히면 라이어 승리예요.</p>
+        </div>
+      </motion.section>
+
       <footer className="relative z-10 border-t border-white/10 py-4 text-center text-xs tracking-wide text-white/30">
         Made by{' '}
         <a
