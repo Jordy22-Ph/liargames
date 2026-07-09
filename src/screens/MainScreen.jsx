@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ref, get, set, serverTimestamp } from 'firebase/database'
 import { db } from '../firebase'
 import CharacterCustomizer from '../components/CharacterCustomizer'
+import BackgroundDecor from '../components/BackgroundDecor'
 import { DEFAULT_AVATAR, randomAvatar } from '../data/avatarOptions'
 import { generateRoomCode } from '../utils/gameLogic'
 import { getClientId } from '../utils/identity'
@@ -15,7 +17,7 @@ export default function MainScreen({ onEnterLobby }) {
   const [nickname, setNickname] = useState('')
   const [avatar, setAvatar] = useState(DEFAULT_AVATAR)
   const [joinCode, setJoinCode] = useState('')
-  const [mode, setMode] = useState('create')
+  const [joinOpen, setJoinOpen] = useState(false)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [showFeedback, setShowFeedback] = useState(false)
@@ -120,92 +122,131 @@ export default function MainScreen({ onEnterLobby }) {
   }
 
   return (
-    <div className="relative flex min-h-svh flex-col">
+    <div className="relative flex min-h-svh flex-col overflow-hidden bg-[#0F1020]">
+      <BackgroundDecor />
+
       <button
         type="button"
         onClick={() => setShowFeedback(true)}
-        className="absolute right-4 top-4 text-xs text-white/40 underline-offset-2 transition
+        className="absolute right-4 top-4 z-10 text-xs text-white/40 underline-offset-2 transition
           hover:text-white/70 hover:underline"
       >
         건의사항이 있으면 눌러주세요
       </button>
 
-      <div className="flex flex-1 items-center justify-center px-6 py-16">
-        <div className="grid w-full max-w-5xl grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_1.1fr_1fr]">
-          <div className="text-center lg:text-left">
-            <h1 className="text-3xl font-bold text-white">라이어 게임</h1>
-            <p className="mt-4 text-sm leading-relaxed text-white/60">
-              한 명(하드 모드는 두 명)만 다른 제시어를 받는 눈치 게임이에요.
-              <br />
-              같은 제시어를 받은 시민들은 티 나지 않게 설명하고, 라이어는 눈치껏
-              시민인 척 버텨야 해요.
-              <br />
-              토론 후 투표로 라이어를 지목하고, 최후 변론까지 들어본 뒤 결과를
-              공개해요.
-              <br />
-              최대 8명까지 친구들과 함께 즐길 수 있어요.
-            </p>
-          </div>
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-8 px-6 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center"
+        >
+          <p className="text-4xl">🎭</p>
+          <h1 className="mt-2 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+            LIAR{' '}
+            <span className="bg-linear-to-r from-[#7C5CFF] to-[#A855F7] bg-clip-text text-transparent">
+              GAME
+            </span>
+          </h1>
+          <p className="mt-2 text-sm text-[#A8A8B8]">거짓말쟁이를 찾아라</p>
+        </motion.div>
 
-          <div className="flex flex-col items-center gap-8">
-            <CharacterCustomizer avatar={avatar} onChange={setAvatar} />
+        <CharacterCustomizer avatar={avatar} onChange={setAvatar} />
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="flex w-full max-w-xs flex-col items-center gap-3"
+        >
+          <div className="relative w-full">
+            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
+              👤
+            </span>
             <input
               value={nickname}
               onChange={(e) => setNickname(e.target.value.slice(0, 10))}
-              placeholder="닉네임 (최대 10자)"
-              className="w-full max-w-xs rounded-xl bg-white/10 px-4 py-3 text-center text-white
-                placeholder:text-white/40 outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-violet-400"
+              placeholder="닉네임을 입력하세요"
+              className="w-full rounded-2xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-white
+                placeholder:text-white/30 outline-none transition
+                focus:border-[#7C5CFF] focus:shadow-[0_0_0_3px_rgba(124,92,255,0.25)]"
             />
           </div>
 
-          <div className="flex flex-col gap-4">
-            <div className="flex w-full rounded-xl bg-white/5 p-1">
-              <button
-                type="button"
-                onClick={() => setMode('create')}
-                className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${
-                  mode === 'create' ? 'bg-violet-500 text-white' : 'text-white/60'
-                }`}
-              >
-                방 만들기
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode('join')}
-                className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${
-                  mode === 'join' ? 'bg-violet-500 text-white' : 'text-white/60'
-                }`}
-              >
-                방 입장
-              </button>
-            </div>
-
-            {mode === 'join' && (
-              <input
+          <AnimatePresence>
+            {joinOpen && (
+              <motion.input
+                key="joinCode"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value.toUpperCase().slice(0, 5))}
-                placeholder="방 코드 5자리"
-                className="w-full rounded-xl bg-white/10 px-4 py-3 text-center uppercase tracking-widest text-white
-                  placeholder:text-white/40 outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-violet-400"
+                placeholder="초대코드 5자리"
+                className="w-full rounded-2xl border border-white/10 bg-white/5 py-3 text-center uppercase
+                  tracking-widest text-white placeholder:text-white/30 outline-none transition
+                  focus:border-[#7C5CFF] focus:shadow-[0_0_0_3px_rgba(124,92,255,0.25)]"
               />
             )}
+          </AnimatePresence>
 
-            {error && <p className="text-sm text-rose-400">{error}</p>}
+          {error && <p className="text-sm text-rose-400">{error}</p>}
 
+          <motion.button
+            type="button"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            disabled={busy}
+            onClick={joinOpen ? handleJoinRoom : handleCreateRoom}
+            className="w-full rounded-2xl bg-linear-to-r from-[#7C5CFF] to-[#A855F7] py-3.5 font-bold text-white
+              shadow-[0_0_25px_rgba(124,92,255,0.45)] transition disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {busy ? '처리 중...' : joinOpen ? '입장하기' : '방 만들기'}
+          </motion.button>
+
+          {joinOpen ? (
             <button
               type="button"
-              disabled={busy}
-              onClick={mode === 'create' ? handleCreateRoom : handleJoinRoom}
-              className="w-full rounded-xl bg-violet-500 py-3 font-semibold text-white transition
-                hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={() => {
+                setJoinOpen(false)
+                setError('')
+              }}
+              className="text-xs text-[#A8A8B8] underline-offset-2 transition hover:text-white hover:underline"
             >
-              {busy ? '처리 중...' : mode === 'create' ? '방 만들기' : '입장하기'}
+              ← 방 만들기로 돌아가기
             </button>
-          </div>
-        </div>
+          ) : (
+            <motion.button
+              type="button"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => {
+                setJoinOpen(true)
+                setError('')
+              }}
+              className="w-full rounded-2xl border border-white/15 bg-transparent py-3 font-medium text-white/80
+                transition hover:border-[#7C5CFF]/60 hover:text-white"
+            >
+              초대코드로 입장
+            </motion.button>
+          )}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-[#A8A8B8] sm:text-sm"
+        >
+          <span>👥 3~8명</span>
+          <span className="text-white/10">|</span>
+          <span>🗳️ 토론 후 투표</span>
+          <span className="text-white/10">|</span>
+          <span>🎭 라이어를 찾아라</span>
+        </motion.div>
       </div>
 
-      <footer className="border-t border-white/10 py-4 text-center text-xs tracking-wide text-white/30">
+      <footer className="relative z-10 border-t border-white/10 py-4 text-center text-xs tracking-wide text-white/30">
         Made by Jordy22-Ph · 라이어 게임
       </footer>
     </div>
