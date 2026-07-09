@@ -96,7 +96,9 @@ export default function LobbyScreen({ roomCode, onExit }) {
     const round = assignRound(room.settings.categoryId, room.settings.mode, userIds)
     round.endsAt = Date.now() + ROUND_DURATION_MS
     round.turnEndsAt = Date.now() + TURN_DURATION_MS
-    update(ref(db, `rooms/${roomCode}`), { status: 'playing', round })
+    // Each new game starts with a clean chat log — carrying over the previous
+    // game's discussion would confuse players and leak old reasoning.
+    update(ref(db, `rooms/${roomCode}`), { status: 'playing', round, chat: null })
   }
 
   const handleReact = (emoji) => {

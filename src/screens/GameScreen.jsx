@@ -11,12 +11,13 @@ import TurnOrderIntro from '../components/TurnOrderIntro'
 import { TURN_DURATION_MS } from '../utils/gameLogic'
 
 const ROUND_RESTART_MESSAGES = {
-  tie: '🔁 이전 투표가 동률이라 아무도 지목되지 못했어요. 다시 토론해보세요!',
-  wrong_accusation: '🔁 지목된 사람이 라이어가 아니었어요! 다시 토론해보세요.',
+  tie: '🗳️ 투표가 동률이었어요. 다시 토론해보세요!',
+  wrong_accusation: '💬 아직 결론을 내리기 어려워요. 다시 토론해보세요.',
 }
 
 export default function GameScreen({ room, roomCode, players, myId, isHost, onLeave }) {
   const me = players.find((p) => p.id === myId)
+  const isFinalDiscussion = room.round.phase === 'finalDiscussion'
   const restartMessage = ROUND_RESTART_MESSAGES[room.round.lastOutcome]
 
   const speakingOrder = room.round.speakingOrder ?? players.map((p) => p.id)
@@ -30,7 +31,7 @@ export default function GameScreen({ room, roomCode, players, myId, isHost, onLe
     setShowIntro(true)
     const timer = setTimeout(() => setShowIntro(false), 2500)
     return () => clearTimeout(timer)
-  }, [room.round.roundNumber])
+  }, [room.round.roundNumber, room.round.phase])
 
   const startVoting = () => {
     update(ref(db, `rooms/${roomCode}`), { status: 'voting' })
@@ -52,7 +53,7 @@ export default function GameScreen({ room, roomCode, players, myId, isHost, onLe
 
       <header className="flex items-center justify-between">
         <p className="text-xs tracking-widest text-white/40">
-          방 코드 {roomCode} · {room.round.roundNumber}라운드
+          방 코드 {roomCode} · {isFinalDiscussion ? '최종 토론' : `${room.round.roundNumber}라운드`}
         </p>
         <div className="flex gap-2">
           {isHost && (
@@ -61,7 +62,7 @@ export default function GameScreen({ room, roomCode, players, myId, isHost, onLe
               onClick={startVoting}
               className="rounded-lg bg-violet-500 px-4 py-1.5 text-sm font-medium text-white hover:bg-violet-400"
             >
-              투표 시작
+              {isFinalDiscussion ? '최종 투표 시작' : '투표 시작'}
             </button>
           )}
           <button
@@ -73,6 +74,12 @@ export default function GameScreen({ room, roomCode, players, myId, isHost, onLe
           </button>
         </div>
       </header>
+
+      {isFinalDiscussion && (
+        <p className="rounded-xl bg-violet-500/10 px-4 py-2 text-center text-sm text-violet-300 ring-1 ring-violet-400/20">
+          🎙️ 최후 변론이 끝났어요. 마지막으로 한 번 더 토론한 뒤 최종 투표를 진행해요.
+        </p>
+      )}
 
       {restartMessage && (
         <p className="rounded-xl bg-amber-500/10 px-4 py-2 text-center text-sm text-amber-300 ring-1 ring-amber-400/20">

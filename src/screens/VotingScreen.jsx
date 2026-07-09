@@ -32,23 +32,39 @@ export default function VotingScreen({ room, roomCode, players, myId, isHost, on
   const votes = room.votes || {}
   const myVote = votes[myId]
   const votedCount = Object.keys(votes).length
+  const isFinalVote = room.round.phase === 'finalDiscussion'
 
   const finalizeVote = () => {
     const tally = tallyVotes(votes)
     const topVotedId = pickTopVoted(tally)
 
     if (topVotedId === null) {
-      // Tie — nobody is pinned down, so there's no one to give a final defense.
-      // Treat it the same as failing to catch the liar: another round, or a
-      // default liar win once the round cap is reached.
+      // Tie — nobody is pinned down. Same fallback either way: another
+      // round, or a default liar win once the round cap is reached.
       update(ref(db, `rooms/${roomCode}`), nextRoundOrLiarWin(room.round, null, 'tie'))
       return
     }
 
-    update(ref(db, `rooms/${roomCode}`), {
-      status: 'defense',
-      defense: { topVotedId, endsAt: Date.now() + DEFENSE_DURATION_MS },
-    })
+    if (!isFinalVote) {
+      // First vote — never decide guilt here. The accused gets a defense,
+      // then everyone gets a final vote before anything is revealed.
+      update(ref(db, `rooms/${roomCode}`), {
+        status: 'defense',
+        defense: { topVotedId, endsAt: Date.now() + DEFENSE_DURATION_MS },
+      })
+      return
+    }
+
+    // Final vote — this is the one that actually decides the game.
+    const liarCaught = room.round.liarIds.includes(topVotedId)
+    if (liarCaught) {
+      update(ref(db, `rooms/${roomCode}`), {
+        status: 'reveal',
+        result: { topVotedId, liarCaught: true, winner: null },
+      })
+    } else {
+      update(ref(db, `rooms/${roomCode}`), nextRoundOrLiarWin(room.round, topVotedId, 'wrong_accusation'))
+    }
   }
 
   useEffect(() => {
@@ -65,7 +81,7 @@ export default function VotingScreen({ room, roomCode, players, myId, isHost, on
   return (
     <div className="mx-auto flex min-h-svh max-w-md flex-col gap-6 px-6 py-10">
       <header className="text-center">
-        <p className="text-xs text-white/40">{room.round.roundNumber}라운드</p>
+        <p className="text-xs text-white/40">{isFinalVote ? '최종 투표' : `${room.round.roundNumber}라운드`}</p>
         <h1 className="text-2xl font-bold text-white">라이어로 의심되는 사람을 지목하세요</h1>
         <p className="mt-1 text-sm text-white/50">{votedCount}/{players.length}명 투표 완료</p>
       </header>

@@ -3,27 +3,30 @@ import { db } from '../firebase'
 import Avatar from '../components/Avatar'
 import CountdownTimer from '../components/CountdownTimer'
 import ChatPanel from '../components/ChatPanel'
-import { nextRoundOrLiarWin } from '../utils/gameLogic'
+import { EXTRA_DISCUSSION_MS, TURN_DURATION_MS } from '../utils/gameLogic'
 
 export default function DefenseScreen({ room, roomCode, players, myId, isHost, onLeave }) {
   const accused = players.find((p) => p.id === room.defense.topVotedId)
   const me = players.find((p) => p.id === myId)
 
+  // Guilt is never decided right after the defense — that would mean this
+  // screen's mere presence (or absence of a follow-up) leaks who's the liar.
+  // Instead everyone gets one more discussion window and a final vote; only
+  // that final vote's outcome (handled in VotingScreen) reveals anything.
   const finishDefense = () => {
-    const topVotedId = room.defense.topVotedId
-    const liarCaught = room.round.liarIds.includes(topVotedId)
-
-    if (liarCaught) {
-      update(ref(db, `rooms/${roomCode}`), {
-        status: 'reveal',
-        result: { topVotedId, liarCaught: true, winner: null },
-      })
-      return
-    }
-
-    // Wrong accusation — another discussion round starts instead of an
-    // immediate liar win, unless the round cap has already been reached.
-    update(ref(db, `rooms/${roomCode}`), nextRoundOrLiarWin(room.round, topVotedId, 'wrong_accusation'))
+    update(ref(db, `rooms/${roomCode}`), {
+      status: 'playing',
+      round: {
+        ...room.round,
+        phase: 'finalDiscussion',
+        lastOutcome: null,
+        endsAt: Date.now() + EXTRA_DISCUSSION_MS,
+        currentSpeakerIndex: 0,
+        turnEndsAt: Date.now() + TURN_DURATION_MS,
+      },
+      votes: null,
+      defense: null,
+    })
   }
 
   return (
@@ -51,7 +54,7 @@ export default function DefenseScreen({ room, roomCode, players, myId, isHost, o
             onClick={finishDefense}
             className="flex-1 rounded-xl bg-violet-500 py-3 font-semibold text-white hover:bg-violet-400"
           >
-            변론 종료 &amp; 결과 공개
+            변론 종료 &amp; 추가 토론 시작
           </button>
         )}
         <button

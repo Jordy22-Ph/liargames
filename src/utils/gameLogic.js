@@ -3,7 +3,8 @@ import topicsData from '../data/topics.json'
 const ROOM_CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
 
 export const ROUND_DURATION_MS = 5 * 60 * 1000
-export const DEFENSE_DURATION_MS = 60 * 1000
+export const DEFENSE_DURATION_MS = 30 * 1000
+export const EXTRA_DISCUSSION_MS = 45 * 1000
 export const TURN_DURATION_MS = 25 * 1000
 export const MAX_ROUNDS = 3
 
@@ -92,6 +93,7 @@ export function nextRoundOrLiarWin(round, topVotedId, reason) {
       roundNumber: round.roundNumber + 1,
       endsAt: Date.now() + ROUND_DURATION_MS,
       lastOutcome: reason,
+      phase: null,
       currentSpeakerIndex: 0,
       turnEndsAt: Date.now() + TURN_DURATION_MS,
     },
