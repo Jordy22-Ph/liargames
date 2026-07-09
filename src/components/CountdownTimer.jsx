@@ -6,6 +6,11 @@ export default function CountdownTimer({ endsAt, onTimeUp, label = '남은 시�
   const firedRef = useRef(false)
 
   useEffect(() => {
+    // A new endsAt means a fresh countdown period (next speaker's turn, next
+    // round, etc.) — without this reset, firedRef stays latched from the
+    // previous period and onTimeUp silently stops firing after the first time.
+    firedRef.current = false
+    setRemaining(endsAt - Date.now())
     const interval = setInterval(() => setRemaining(endsAt - Date.now()), 1000)
     return () => clearInterval(interval)
   }, [endsAt])
