@@ -45,8 +45,20 @@ const EYE_SHAPES = {
   ),
   spiral: (
     <>
-      <path d="M41 46a6 6 0 1 1 -6 6a3 3 0 1 0 3-3" stroke="#2b2140" strokeWidth="3" strokeLinecap="round" fill="none" />
-      <path d="M79 46a6 6 0 1 1 -6 6a3 3 0 1 0 3-3" stroke="#2b2140" strokeWidth="3" strokeLinecap="round" fill="none" />
+      <path
+        d="M47 52 A6 6 0 1 1 35 52 A4 4 0 1 1 43 52 A2 2 0 1 1 39 52"
+        stroke="#2b2140"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <path
+        d="M85 52 A6 6 0 1 1 73 52 A4 4 0 1 1 81 52 A2 2 0 1 1 77 52"
+        stroke="#2b2140"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        fill="none"
+      />
     </>
   ),
 }
