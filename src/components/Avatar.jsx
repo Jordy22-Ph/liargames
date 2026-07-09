@@ -1,4 +1,4 @@
-import { EYES, MOUTHS, THEMES } from '../data/avatarOptions'
+import { EYES, MOUTHS, THEMES, ACCESSORIES } from '../data/avatarOptions'
 
 const EYE_SHAPES = {
   round: (
@@ -84,10 +84,36 @@ const MOUTH_SHAPES = {
   kiss: <ellipse cx="60" cy="75" rx="5" ry="6" fill="#2b2140" />,
 }
 
+const ACCESSORY_SHAPES = {
+  none: null,
+  glasses: (
+    <g>
+      <circle cx="41" cy="52" r="10" fill="rgba(255,255,255,0.15)" stroke="#2b2140" strokeWidth="3" />
+      <circle cx="79" cy="52" r="10" fill="rgba(255,255,255,0.15)" stroke="#2b2140" strokeWidth="3" />
+      <line x1="51" y1="52" x2="69" y2="52" stroke="#2b2140" strokeWidth="3" />
+    </g>
+  ),
+  bowtie: (
+    <g>
+      <path d="M46 96 L58 90 L58 102 Z" fill="#e0435c" />
+      <path d="M74 96 L62 90 L62 102 Z" fill="#e0435c" />
+      <circle cx="60" cy="96" r="3" fill="#b8324a" />
+    </g>
+  ),
+  hat: (
+    <g>
+      <path d="M60 2 L78 34 L42 34 Z" fill="#7C5CFF" />
+      <circle cx="60" cy="2" r="4" fill="#ffd873" />
+      <rect x="40" y="30" width="40" height="6" rx="2" fill="#A855F7" />
+    </g>
+  ),
+}
+
 export default function Avatar({ avatar, size = 120, className = '' }) {
   const eyeId = EYES[avatar.eyes % EYES.length].id
   const mouthId = MOUTHS[avatar.mouth % MOUTHS.length].id
   const theme = THEMES[avatar.theme % THEMES.length]
+  const accessoryId = ACCESSORIES[(avatar.accessory ?? 0) % ACCESSORIES.length].id
 
   return (
     <svg
@@ -103,6 +129,7 @@ export default function Avatar({ avatar, size = 120, className = '' }) {
       <circle cx="90" cy="72" r="9" fill={theme.cheeks} opacity="0.55" />
       {EYE_SHAPES[eyeId]}
       {MOUTH_SHAPES[mouthId]}
+      {ACCESSORY_SHAPES[accessoryId]}
     </svg>
   )
 }

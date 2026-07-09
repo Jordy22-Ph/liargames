@@ -31,10 +31,18 @@ export const THEMES = [
   { id: 'lilac', label: '라일락', face: '#f0c9e8', cheeks: '#e3a8d8' },
 ]
 
+export const ACCESSORIES = [
+  { id: 'none', label: '없음' },
+  { id: 'glasses', label: '안경' },
+  { id: 'bowtie', label: '보타이' },
+  { id: 'hat', label: '모자' },
+]
+
 export const DEFAULT_AVATAR = {
   eyes: 0,
   mouth: 0,
   theme: 0,
+  accessory: 0,
 }
 
 export function randomAvatar() {
@@ -42,5 +50,6 @@ export function randomAvatar() {
     eyes: Math.floor(Math.random() * EYES.length),
     mouth: Math.floor(Math.random() * MOUTHS.length),
     theme: Math.floor(Math.random() * THEMES.length),
+    accessory: Math.floor(Math.random() * ACCESSORIES.length),
   }
 }

@@ -1,8 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ref, onValue, update, remove, onDisconnect } from 'firebase/database'
+import { AnimatePresence } from 'framer-motion'
+import { ref, onValue, update, remove, set, onDisconnect } from 'firebase/database'
 import { db } from '../firebase'
-import Avatar from '../components/Avatar'
 import Tooltip from '../components/Tooltip'
+import Modal from '../components/Modal'
+import Toast from '../components/Toast'
+import RoomCodeCard from '../components/RoomCodeCard'
+import PlayerCard from '../components/PlayerCard'
+import ReactionBar from '../components/ReactionBar'
+import LobbyChat from '../components/LobbyChat'
+import CharacterCustomizer from '../components/CharacterCustomizer'
+import { useToast } from '../hooks/useToast'
+import { DEFAULT_AVATAR } from '../data/avatarOptions'
 import { getCategories, assignRound, ROUND_DURATION_MS } from '../utils/gameLogic'
 import { getClientId } from '../utils/identity'
 import GameScreen from './GameScreen'
@@ -12,10 +21,13 @@ import RevealScreen from './RevealScreen'
 
 const MAX_PLAYERS = 8
 const MIN_PLAYERS = 3
+const AVATAR_KEY = 'liar_game_avatar'
 
 export default function LobbyScreen({ roomCode, onExit }) {
   const uid = getClientId()
   const [room, setRoom] = useState(null)
+  const [editingCharacter, setEditingCharacter] = useState(false)
+  const { toastMessage, showToast } = useToast()
 
   useEffect(() => {
     const roomRef = ref(db, `rooms/${roomCode}`)
@@ -48,7 +60,9 @@ export default function LobbyScreen({ roomCode, onExit }) {
 
   const isHost = room.hostId === uid
   const categories = getCategories()
-  const canStart = isHost && players.length >= MIN_PLAYERS && room.status === 'lobby'
+  const me = players.find((p) => p.id === uid)
+  const allReady = players.length > 0 && players.every((p) => p.ready)
+  const canStart = isHost && players.length >= MIN_PLAYERS && allReady && room.status === 'lobby'
 
   const handleLeave = async () => {
     const remaining = players.filter((p) => p.id !== uid)
@@ -84,6 +98,19 @@ export default function LobbyScreen({ roomCode, onExit }) {
     const round = assignRound(room.settings.categoryId, room.settings.mode, userIds)
     round.endsAt = Date.now() + ROUND_DURATION_MS
     update(ref(db, `rooms/${roomCode}`), { status: 'playing', round })
+  }
+
+  const handleToggleReady = () => {
+    update(ref(db, `rooms/${roomCode}/users/${uid}`), { ready: !me?.ready })
+  }
+
+  const handleReact = (emoji) => {
+    set(ref(db, `rooms/${roomCode}/reactions/${uid}`), { emoji, ts: Date.now() })
+  }
+
+  const handleAvatarChange = (nextAvatar) => {
+    update(ref(db, `rooms/${roomCode}/users/${uid}/avatar`), nextAvatar)
+    localStorage.setItem(AVATAR_KEY, JSON.stringify(nextAvatar))
   }
 
   if (room.status === 'playing' && room.round) {
@@ -138,47 +165,65 @@ export default function LobbyScreen({ roomCode, onExit }) {
     )
   }
 
+  const readyCount = players.filter((p) => p.ready).length
+  let startLabel = '게임 시작'
+  if (players.length < MIN_PLAYERS) {
+    startLabel = `최소 ${MIN_PLAYERS}명 필요 (${players.length}/${MIN_PLAYERS})`
+  } else if (!allReady) {
+    startLabel = `모두 준비 완료를 기다리는 중 (${readyCount}/${players.length})`
+  }
+
   return (
     <div className="mx-auto flex min-h-svh max-w-2xl flex-col gap-6 px-6 py-8">
       <header className="flex items-center justify-between">
-        <div>
-          <p className="text-xs text-white/40">방 코드</p>
-          <h1 className="text-2xl font-bold tracking-widest text-white">{roomCode}</h1>
+        <p className="text-lg font-semibold text-white">대기실</p>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setEditingCharacter(true)}
+            className="rounded-lg bg-white/10 px-4 py-2 text-sm text-white/70 transition hover:bg-white/20 active:scale-95"
+          >
+            👤 캐릭터 수정
+          </button>
+          <button
+            type="button"
+            onClick={handleLeave}
+            className="rounded-lg bg-white/10 px-4 py-2 text-sm text-white/70 transition hover:bg-white/20 active:scale-95"
+          >
+            나가기
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={handleLeave}
-          className="rounded-lg bg-white/10 px-4 py-2 text-sm text-white/70 hover:bg-white/20"
-        >
-          나가기
-        </button>
       </header>
 
+      <RoomCodeCard
+        roomCode={roomCode}
+        playerCount={players.length}
+        maxPlayers={MAX_PLAYERS}
+        onToast={showToast}
+      />
+
       <section className="grid grid-cols-4 gap-3 sm:grid-cols-4">
-        {Array.from({ length: MAX_PLAYERS }).map((_, i) => {
-          const player = players[i]
-          return (
-            <div
-              key={player?.id ?? `empty-${i}`}
-              className="flex flex-col items-center gap-1 rounded-xl bg-white/5 p-3"
-            >
-              {player ? (
-                <>
-                  <Avatar avatar={player.avatar} size={56} />
-                  <p className="truncate text-xs text-white">
-                    {player.nickname} {player.id === room.hostId && '👑'}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <div className="grid h-14 w-14 place-items-center rounded-full bg-white/5 text-white/20">?</div>
-                  <p className="text-xs text-white/30">대기 중</p>
-                </>
-              )}
-            </div>
-          )
-        })}
+        <AnimatePresence initial={false}>
+          {players.map((player) => (
+            <PlayerCard
+              key={player.id}
+              player={player}
+              isHostPlayer={player.id === room.hostId}
+              isMe={player.id === uid}
+              reaction={room.reactions?.[player.id]}
+              onToggleReady={handleToggleReady}
+            />
+          ))}
+        </AnimatePresence>
+        {Array.from({ length: Math.max(0, MAX_PLAYERS - players.length) }).map((_, i) => (
+          <div key={`empty-${i}`} className="flex flex-col items-center gap-1 rounded-xl bg-white/5 p-3">
+            <div className="grid h-14 w-14 place-items-center rounded-full bg-white/5 text-white/20">?</div>
+            <p className="text-xs text-white/30">대기 중</p>
+          </div>
+        ))}
       </section>
+
+      <ReactionBar onReact={handleReact} />
 
       <section className="rounded-2xl bg-white/5 p-5">
         <p className="mb-3 text-sm font-medium text-white/70">주제 선택</p>
@@ -246,13 +291,29 @@ export default function LobbyScreen({ roomCode, onExit }) {
           disabled={!canStart}
           onClick={handleStart}
           className="rounded-xl bg-violet-500 py-3 font-semibold text-white transition
-            hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-40"
+            hover:bg-violet-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {players.length < MIN_PLAYERS ? `최소 ${MIN_PLAYERS}명 필요 (${players.length}/${MIN_PLAYERS})` : '게임 시작'}
+          {startLabel}
         </button>
       ) : (
         <p className="text-center text-sm text-white/40">방장이 설정을 마치면 게임이 시작됩니다.</p>
       )}
+
+      <Modal open={editingCharacter} onClose={() => setEditingCharacter(false)}>
+        <div className="flex flex-col items-center gap-4">
+          <CharacterCustomizer avatar={me?.avatar ?? DEFAULT_AVATAR} onChange={handleAvatarChange} />
+          <button
+            type="button"
+            onClick={() => setEditingCharacter(false)}
+            className="rounded-xl bg-violet-500 px-8 py-2.5 font-semibold text-white transition hover:bg-violet-400"
+          >
+            완료
+          </button>
+        </div>
+      </Modal>
+
+      <LobbyChat roomCode={roomCode} myId={uid} myNickname={me?.nickname ?? ''} />
+      <Toast message={toastMessage} />
     </div>
   )
 }

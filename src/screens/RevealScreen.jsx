@@ -46,9 +46,8 @@ export default function RevealScreen({ room, roomCode, players, myId, isHost, on
       <p className="text-white/80">
         {topVoted ? (
           <>
-            가장 많이 지목된 사람: <span className="font-semibold text-white">{topVoted.nickname}</span>
-            <br />
-            {result.liarCaught ? '⭕ 라이어였습니다!' : '❌ 라이어가 아니었습니다.'}
+            🗳️ 가장 많은 표를 받은 <span className="font-semibold text-white">{topVoted.nickname}</span>
+            님이 탈락했습니다.
           </>
         ) : (
           '투표가 동률이라 아무도 지목되지 않았어요.'

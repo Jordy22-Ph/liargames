@@ -36,15 +36,26 @@
             // the console rules linter chokes on numChildren() through a .parent()
             // chain, so we don't duplicate that check here.
             ".write": "auth != null && auth.uid === $uid",
-            ".validate": "newData.hasChildren(['nickname', 'avatar', 'isHost', 'joinedAt'])",
+            ".validate": "newData.hasChildren(['nickname', 'avatar', 'isHost', 'joinedAt', 'ready'])",
 
             "nickname": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 10" },
+            "ready": { ".validate": "newData.isBoolean()" },
             "avatar": {
-              ".validate": "newData.hasChildren(['eyes', 'mouth', 'theme'])",
+              ".validate": "newData.hasChildren(['eyes', 'mouth', 'theme', 'accessory'])",
               "eyes": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 7" },
               "mouth": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 7" },
-              "theme": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 7" }
+              "theme": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 7" },
+              "accessory": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3" }
             }
+          }
+        },
+
+        "reactions": {
+          "$uid": {
+            // A short-lived emoji broadcast above the sender's own player card;
+            // clients expire it locally after ~2s, so no cleanup write is needed.
+            ".write": "auth != null && auth.uid === $uid",
+            ".validate": "newData.hasChildren(['emoji', 'ts']) && newData.child('emoji').isString() && newData.child('ts').isNumber()"
           }
         },
 

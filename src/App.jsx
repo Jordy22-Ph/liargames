@@ -2,19 +2,25 @@ import { useEffect, useState } from 'react'
 import MainScreen from './screens/MainScreen'
 import LobbyScreen from './screens/LobbyScreen'
 import { initIdentity } from './utils/identity'
+import { parseJoinCodeFromPath } from './utils/inviteLink'
 
 export default function App() {
   const [roomCode, setRoomCode] = useState(null)
   const [ready, setReady] = useState(false)
   const [authError, setAuthError] = useState(false)
+  const [initialJoinCode] = useState(() => parseJoinCodeFromPath())
 
   useEffect(() => {
+    if (initialJoinCode) {
+      window.history.replaceState({}, '', '/')
+    }
     initIdentity()
       .then(() => setReady(true))
       .catch((err) => {
         console.error(err)
         setAuthError(true)
       })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (authError) {
@@ -33,5 +39,5 @@ export default function App() {
     return <LobbyScreen roomCode={roomCode} onExit={() => setRoomCode(null)} />
   }
 
-  return <MainScreen onEnterLobby={setRoomCode} />
+  return <MainScreen onEnterLobby={setRoomCode} initialJoinCode={initialJoinCode} />
 }

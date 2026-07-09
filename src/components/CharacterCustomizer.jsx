@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import Avatar from './Avatar'
-import { EYES, MOUTHS, THEMES } from '../data/avatarOptions'
+import { EYES, MOUTHS, THEMES, ACCESSORIES } from '../data/avatarOptions'
 
 function ArrowButton({ direction, onClick, label }) {
   return (
@@ -98,6 +98,12 @@ export default function CharacterCustomizer({ avatar, onChange }) {
         <StepRow label="눈" options={EYES} selected={avatar.eyes} onSelect={update('eyes')} />
         <StepRow label="입" options={MOUTHS} selected={avatar.mouth} onSelect={update('mouth')} />
         <SkinRow label="피부" options={THEMES} selected={avatar.theme} onSelect={update('theme')} />
+        <StepRow
+          label="악세사리"
+          options={ACCESSORIES}
+          selected={avatar.accessory ?? 0}
+          onSelect={update('accessory')}
+        />
       </div>
     </motion.div>
   )

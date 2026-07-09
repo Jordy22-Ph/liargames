@@ -13,11 +13,11 @@ const NICKNAME_KEY = 'liar_game_nickname'
 const AVATAR_KEY = 'liar_game_avatar'
 const MAX_PLAYERS = 8
 
-export default function MainScreen({ onEnterLobby }) {
+export default function MainScreen({ onEnterLobby, initialJoinCode }) {
   const [nickname, setNickname] = useState('')
   const [avatar, setAvatar] = useState(DEFAULT_AVATAR)
-  const [joinCode, setJoinCode] = useState('')
-  const [joinOpen, setJoinOpen] = useState(false)
+  const [joinCode, setJoinCode] = useState(initialJoinCode || '')
+  const [joinOpen, setJoinOpen] = useState(Boolean(initialJoinCode))
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [showFeedback, setShowFeedback] = useState(false)
@@ -38,6 +38,7 @@ export default function MainScreen({ onEnterLobby }) {
     nickname: nickname.trim(),
     avatar,
     isHost,
+    ready: false,
     joinedAt: serverTimestamp(),
   })
 
