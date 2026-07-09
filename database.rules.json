@@ -60,7 +60,7 @@
         // Only ever written by the host (round assignment on start, cleared on
         // rematch) — no dedicated child rule needed, it rides the room-root rule.
         "round": {
-          ".validate": "newData.hasChildren(['categoryId', 'categoryName', 'mode', 'liarIds', 'wordByUser', 'word', 'endsAt'])"
+          ".validate": "newData.hasChildren(['categoryId', 'categoryName', 'mode', 'liarIds', 'wordByUser', 'word', 'endsAt', 'speakingOrder', 'currentSpeakerIndex', 'turnEndsAt'])"
         },
 
         // Only ever written by the host (set when voting ends with a non-tied top

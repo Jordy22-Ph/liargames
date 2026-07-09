@@ -11,7 +11,7 @@ import ReactionBar from '../components/ReactionBar'
 import CharacterCustomizer from '../components/CharacterCustomizer'
 import { useToast } from '../hooks/useToast'
 import { DEFAULT_AVATAR } from '../data/avatarOptions'
-import { getCategories, assignRound, ROUND_DURATION_MS } from '../utils/gameLogic'
+import { getCategories, assignRound, ROUND_DURATION_MS, TURN_DURATION_MS } from '../utils/gameLogic'
 import { getClientId } from '../utils/identity'
 import GameScreen from './GameScreen'
 import VotingScreen from './VotingScreen'
@@ -95,6 +95,7 @@ export default function LobbyScreen({ roomCode, onExit }) {
     const userIds = players.map((p) => p.id)
     const round = assignRound(room.settings.categoryId, room.settings.mode, userIds)
     round.endsAt = Date.now() + ROUND_DURATION_MS
+    round.turnEndsAt = Date.now() + TURN_DURATION_MS
     update(ref(db, `rooms/${roomCode}`), { status: 'playing', round })
   }
 

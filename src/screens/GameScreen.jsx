@@ -1,9 +1,14 @@
+import { useEffect, useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import { ref, update } from 'firebase/database'
 import { db } from '../firebase'
 import PlayerPodiums from '../components/PlayerPodiums'
 import ChatPanel from '../components/ChatPanel'
 import WordCard from '../components/WordCard'
 import TimerMemoPanel from '../components/TimerMemoPanel'
+import CountdownTimer from '../components/CountdownTimer'
+import TurnOrderIntro from '../components/TurnOrderIntro'
+import { TURN_DURATION_MS } from '../utils/gameLogic'
 
 const ROUND_RESTART_MESSAGES = {
   tie: '🔁 이전 투표가 동률이라 아무도 지목되지 못했어요. 다시 토론해보세요!',
@@ -14,12 +19,37 @@ export default function GameScreen({ room, roomCode, players, myId, isHost, onLe
   const me = players.find((p) => p.id === myId)
   const restartMessage = ROUND_RESTART_MESSAGES[room.round.lastOutcome]
 
+  const speakingOrder = room.round.speakingOrder ?? players.map((p) => p.id)
+  const orderedPlayers = speakingOrder.map((id) => players.find((p) => p.id === id)).filter(Boolean)
+  const currentSpeakerId = speakingOrder[room.round.currentSpeakerIndex ?? 0]
+  const currentSpeaker = players.find((p) => p.id === currentSpeakerId)
+
+  const [showIntro, setShowIntro] = useState(true)
+
+  useEffect(() => {
+    setShowIntro(true)
+    const timer = setTimeout(() => setShowIntro(false), 2500)
+    return () => clearTimeout(timer)
+  }, [room.round.roundNumber])
+
   const startVoting = () => {
     update(ref(db, `rooms/${roomCode}`), { status: 'voting' })
   }
 
+  const advanceTurn = () => {
+    const nextIndex = ((room.round.currentSpeakerIndex ?? 0) + 1) % speakingOrder.length
+    update(ref(db, `rooms/${roomCode}/round`), {
+      currentSpeakerIndex: nextIndex,
+      turnEndsAt: Date.now() + TURN_DURATION_MS,
+    })
+  }
+
   return (
     <div className="mx-auto flex min-h-svh max-w-5xl flex-col gap-4 px-4 py-6">
+      <AnimatePresence>
+        {showIntro && <TurnOrderIntro order={speakingOrder} players={players} />}
+      </AnimatePresence>
+
       <header className="flex items-center justify-between">
         <p className="text-xs tracking-widest text-white/40">
           방 코드 {roomCode} · {room.round.roundNumber}라운드
@@ -51,7 +81,25 @@ export default function GameScreen({ room, roomCode, players, myId, isHost, onLe
       )}
 
       <section className="rounded-2xl bg-white/5 p-4">
-        <PlayerPodiums players={players} myId={myId} hostId={room.hostId} />
+        <PlayerPodiums players={orderedPlayers} myId={myId} hostId={room.hostId} currentSpeakerId={currentSpeakerId} />
+      </section>
+
+      <section className="flex items-center justify-between rounded-2xl bg-white/5 px-4 py-3">
+        <p className="text-sm text-white/70">
+          🎤 <span className="font-semibold text-white">{currentSpeaker?.nickname ?? '...'}</span>님 발언 중
+        </p>
+        <div className="flex items-center gap-3">
+          <CountdownTimer endsAt={room.round.turnEndsAt} onTimeUp={isHost ? advanceTurn : undefined} label="발언 시간" />
+          {isHost && (
+            <button
+              type="button"
+              onClick={advanceTurn}
+              className="rounded-lg bg-white/10 px-3 py-1.5 text-xs text-white/70 transition hover:bg-white/20"
+            >
+              다음 사람 →
+            </button>
+          )}
+        </div>
       </section>
 
       <section className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-3 md:[&>*]:h-80">

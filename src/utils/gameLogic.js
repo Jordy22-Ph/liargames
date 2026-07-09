@@ -4,6 +4,7 @@ const ROOM_CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
 
 export const ROUND_DURATION_MS = 5 * 60 * 1000
 export const DEFENSE_DURATION_MS = 60 * 1000
+export const TURN_DURATION_MS = 25 * 1000
 export const MAX_ROUNDS = 3
 
 export function generateRoomCode(length = 5) {
@@ -62,6 +63,11 @@ export function assignRound(categoryId, mode, userIds) {
     word: entry.word,
     similarWord: mode === 'hard' ? entry.similar : null,
     roundNumber: 1,
+    // Randomized once per game (not re-shuffled between rounds 2/3) so
+    // everyone gets a fair, unpredictable turn instead of the same few
+    // people always jumping in first.
+    speakingOrder: pickRandom(userIds, userIds.length),
+    currentSpeakerIndex: 0,
   }
 }
 
@@ -86,6 +92,8 @@ export function nextRoundOrLiarWin(round, topVotedId, reason) {
       roundNumber: round.roundNumber + 1,
       endsAt: Date.now() + ROUND_DURATION_MS,
       lastOutcome: reason,
+      currentSpeakerIndex: 0,
+      turnEndsAt: Date.now() + TURN_DURATION_MS,
     },
     votes: null,
     defense: null,
