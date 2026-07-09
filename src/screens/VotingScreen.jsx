@@ -41,7 +41,7 @@ export default function VotingScreen({ room, roomCode, players, myId, isHost, on
       // Tie — nobody is pinned down, so there's no one to give a final defense.
       // Treat it the same as failing to catch the liar: another round, or a
       // default liar win once the round cap is reached.
-      update(ref(db, `rooms/${roomCode}`), nextRoundOrLiarWin(room.round, null))
+      update(ref(db, `rooms/${roomCode}`), nextRoundOrLiarWin(room.round, null, 'tie'))
       return
     }
 

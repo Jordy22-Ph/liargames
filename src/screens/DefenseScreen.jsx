@@ -23,7 +23,7 @@ export default function DefenseScreen({ room, roomCode, players, myId, isHost, o
 
     // Wrong accusation — another discussion round starts instead of an
     // immediate liar win, unless the round cap has already been reached.
-    update(ref(db, `rooms/${roomCode}`), nextRoundOrLiarWin(room.round, topVotedId))
+    update(ref(db, `rooms/${roomCode}`), nextRoundOrLiarWin(room.round, topVotedId, 'wrong_accusation'))
   }
 
   return (

@@ -5,8 +5,14 @@ import ChatPanel from '../components/ChatPanel'
 import WordCard from '../components/WordCard'
 import TimerMemoPanel from '../components/TimerMemoPanel'
 
+const ROUND_RESTART_MESSAGES = {
+  tie: '🔁 이전 투표가 동률이라 아무도 지목되지 못했어요. 다시 토론해보세요!',
+  wrong_accusation: '🔁 지목된 사람이 라이어가 아니었어요! 다시 토론해보세요.',
+}
+
 export default function GameScreen({ room, roomCode, players, myId, isHost, onLeave }) {
   const me = players.find((p) => p.id === myId)
+  const restartMessage = ROUND_RESTART_MESSAGES[room.round.lastOutcome]
 
   const startVoting = () => {
     update(ref(db, `rooms/${roomCode}`), { status: 'voting' })
@@ -37,6 +43,12 @@ export default function GameScreen({ room, roomCode, players, myId, isHost, onLe
           </button>
         </div>
       </header>
+
+      {restartMessage && (
+        <p className="rounded-xl bg-amber-500/10 px-4 py-2 text-center text-sm text-amber-300 ring-1 ring-amber-400/20">
+          {restartMessage}
+        </p>
+      )}
 
       <section className="rounded-2xl bg-white/5 p-4">
         <PlayerPodiums players={players} myId={myId} hostId={room.hostId} />

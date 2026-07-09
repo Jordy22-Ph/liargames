@@ -71,7 +71,7 @@ export function assignRound(categoryId, mode, userIds) {
  * assignment carries into a fresh discussion round; at the cap, the liar
  * wins by default since the citizens ran out of chances to catch them.
  */
-export function nextRoundOrLiarWin(round, topVotedId) {
+export function nextRoundOrLiarWin(round, topVotedId, reason) {
   if (round.roundNumber >= MAX_ROUNDS) {
     return {
       status: 'reveal',
@@ -81,7 +81,12 @@ export function nextRoundOrLiarWin(round, topVotedId) {
 
   return {
     status: 'playing',
-    round: { ...round, roundNumber: round.roundNumber + 1, endsAt: Date.now() + ROUND_DURATION_MS },
+    round: {
+      ...round,
+      roundNumber: round.roundNumber + 1,
+      endsAt: Date.now() + ROUND_DURATION_MS,
+      lastOutcome: reason,
+    },
     votes: null,
     defense: null,
   }
