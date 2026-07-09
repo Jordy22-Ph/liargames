@@ -1,0 +1,87 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "rooms": {
+      "$roomCode": {
+        // Room codes are the access secret (5 random chars, unguessable, not listable
+        // since there's no read rule on the bare "rooms" node) — any signed-in client
+        // that knows the code can read the room, anonymous auth included.
+        ".read": "auth != null",
+
+        // Governs whole-room writes: creating a brand-new room (must self-declare as
+        // host) or any host-driven transition (settings, round assignment, status
+        // changes, rematch reset, room deletion on host leave).
+        ".write": "auth != null && (data.exists() ? data.child('hostId').val() === auth.uid : newData.child('hostId').val() === auth.uid)",
+        ".validate": "newData.hasChildren(['hostId', 'status', 'settings', 'users'])",
+
+        "hostId": { ".validate": "newData.isString()" },
+
+        "status": {
+          ".validate": "newData.val() === 'lobby' || newData.val() === 'playing' || newData.val() === 'voting' || newData.val() === 'reveal'"
+        },
+
+        "settings": {
+          ".validate": "newData.hasChildren(['categoryId', 'mode'])",
+          "categoryId": { ".validate": "newData.isString()" },
+          "mode": { ".validate": "newData.val() === 'normal' || newData.val() === 'hard'" }
+        },
+
+        "users": {
+          "$uid": {
+            // A player manages only their own seat (join/update/leave); the host can
+            // also touch any seat via the room-root rule above. Capacity of 8 is only
+            // checked when adding a brand-new seat, not when updating an existing one.
+            ".write": "auth != null && auth.uid === $uid && (data.exists() || root.child('rooms').child($roomCode).child('users').numChildren() < 8)",
+            ".validate": "newData.hasChildren(['nickname', 'avatar', 'isHost', 'joinedAt'])",
+
+            "nickname": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 10" },
+            "avatar": {
+              ".validate": "newData.hasChildren(['eyes', 'mouth', 'theme'])",
+              "eyes": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4" },
+              "mouth": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4" },
+              "theme": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4" }
+            }
+          }
+        },
+
+        // Only ever written by the host (round assignment on start, cleared on
+        // rematch) — no dedicated child rule needed, it rides the room-root rule.
+        "round": {
+          ".validate": "newData.hasChildren(['categoryId', 'categoryName', 'mode', 'liarIds', 'wordByUser', 'word', 'endsAt'])"
+        },
+
+        "votes": {
+          "$voterUid": {
+            // Each player casts only their own vote, and can't vote for themselves.
+            ".write": "auth != null && auth.uid === $voterUid",
+            ".validate": "newData.isString() && newData.val() !== $voterUid && root.child('rooms').child($roomCode).child('users').hasChild(newData.val())"
+          }
+        },
+
+        "chat": {
+          "$msgId": {
+            // Append-only log: a message can be created by its author, never edited
+            // or deleted afterwards (data.exists() is false only on first write).
+            ".write": "auth != null && !data.exists() && newData.child('userId').val() === auth.uid",
+            ".validate": "newData.hasChildren(['userId', 'nickname', 'text', 'ts'])",
+            "text": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 200" },
+            "nickname": { ".validate": "newData.isString() && newData.val().length <= 10" },
+            "ts": { ".validate": "newData.isNumber()" }
+          }
+        },
+
+        "result": {
+          // Host can always write result (creating it at reveal time, clearing it on
+          // rematch). Separately, the one player who got caught (topVotedId) can
+          // submit their own word-guess exactly once, before winner is decided —
+          // this has to be its own rule because it's the only path a non-host client
+          // legitimately writes to under "result".
+          ".write": "auth != null && (root.child('rooms').child($roomCode).child('hostId').val() === auth.uid || (data.child('liarCaught').val() === true && !data.child('winner').val() && auth.uid === data.child('topVotedId').val()))",
+          "winner": { ".validate": "newData.val() === 'citizens' || newData.val() === 'liars'" }
+        }
+      }
+    }
+  }
+}

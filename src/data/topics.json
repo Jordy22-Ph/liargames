@@ -1,0 +1,69 @@
+{
+  "categories": [
+    {
+      "id": "food",
+      "name": "음식",
+      "words": [
+        { "word": "짜장면", "similar": "짬뽕" },
+        { "word": "김치찌개", "similar": "된장찌개" },
+        { "word": "삼겹살", "similar": "목살" },
+        { "word": "떡볶이", "similar": "순대" },
+        { "word": "초밥", "similar": "회" },
+        { "word": "피자", "similar": "파스타" },
+        { "word": "치킨", "similar": "핫도그" }
+      ]
+    },
+    {
+      "id": "country",
+      "name": "나라",
+      "words": [
+        { "word": "일본", "similar": "한국" },
+        { "word": "프랑스", "similar": "이탈리아" },
+        { "word": "미국", "similar": "캐나다" },
+        { "word": "태국", "similar": "베트남" },
+        { "word": "스페인", "similar": "포르투갈" },
+        { "word": "독일", "similar": "스위스" },
+        { "word": "브라질", "similar": "아르헨티나" }
+      ]
+    },
+    {
+      "id": "electronics",
+      "name": "전자기기",
+      "words": [
+        { "word": "스마트폰", "similar": "태블릿" },
+        { "word": "노트북", "similar": "데스크탑" },
+        { "word": "무선이어폰", "similar": "헤드폰" },
+        { "word": "스마트워치", "similar": "스마트밴드" },
+        { "word": "냉장고", "similar": "김치냉장고" },
+        { "word": "청소기", "similar": "로봇청소기" },
+        { "word": "에어컨", "similar": "선풍기" }
+      ]
+    },
+    {
+      "id": "animal",
+      "name": "동물",
+      "words": [
+        { "word": "진돗개", "similar": "말티즈" },
+        { "word": "코끼리", "similar": "하마" },
+        { "word": "호랑이", "similar": "사자" },
+        { "word": "펭귄", "similar": "물개" },
+        { "word": "토끼", "similar": "고양이" },
+        { "word": "다람쥐", "similar": "햄스터" },
+        { "word": "부엉이", "similar": "까마귀" }
+      ]
+    },
+    {
+      "id": "sports",
+      "name": "스포츠",
+      "words": [
+        { "word": "축구", "similar": "풋살" },
+        { "word": "농구", "similar": "배구" },
+        { "word": "야구", "similar": "소프트볼" },
+        { "word": "탁구", "similar": "배드민턴" },
+        { "word": "수영", "similar": "다이빙" },
+        { "word": "볼링", "similar": "당구" },
+        { "word": "테니스", "similar": "스쿼시" }
+      ]
+    }
+  ]
+}
