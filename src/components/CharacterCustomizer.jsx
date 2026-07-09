@@ -2,6 +2,36 @@ import { motion } from 'framer-motion'
 import Avatar from './Avatar'
 import { EYES, MOUTHS, THEMES } from '../data/avatarOptions'
 
+function ArrowButton({ direction, onClick, label }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5
+        text-lg text-white/70 transition hover:border-[#7C5CFF]/70 hover:text-white active:scale-90"
+    >
+      {direction === 'left' ? '‹' : '›'}
+    </button>
+  )
+}
+
+function StepRow({ label, options, selected, onSelect }) {
+  const prev = () => onSelect((selected - 1 + options.length) % options.length)
+  const next = () => onSelect((selected + 1) % options.length)
+
+  return (
+    <div className="flex flex-col items-center gap-1.5">
+      <p className="text-[11px] font-medium uppercase tracking-wider text-[#A8A8B8]">{label}</p>
+      <div className="flex items-center gap-3">
+        <ArrowButton direction="left" onClick={prev} label={`이전 ${label}`} />
+        <p className="w-24 text-center text-sm font-medium text-white">{options[selected].label}</p>
+        <ArrowButton direction="right" onClick={next} label={`다음 ${label}`} />
+      </div>
+    </div>
+  )
+}
+
 function Dot({ active, onClick, label, style }) {
   return (
     <button
@@ -10,33 +40,36 @@ function Dot({ active, onClick, label, style }) {
       aria-label={label}
       aria-pressed={active}
       style={style}
-      className={`h-3.5 w-3.5 rounded-full transition-all duration-200 ${
-        active
-          ? 'scale-125 shadow-[0_0_10px_rgba(124,92,255,0.85)]'
-          : 'opacity-45 hover:opacity-80'
+      className={`h-3 w-3 shrink-0 rounded-full transition-all duration-200 ${
+        active ? 'scale-125 shadow-[0_0_8px_rgba(124,92,255,0.85)]' : 'opacity-45 hover:opacity-80'
       }`}
     />
   )
 }
 
-function DotRow({ label, options, selected, onSelect, colored }) {
+function SkinRow({ label, options, selected, onSelect }) {
+  const prev = () => onSelect((selected - 1 + options.length) % options.length)
+  const next = () => onSelect((selected + 1) % options.length)
+
   return (
-    <div className="flex flex-col items-center gap-2">
-      <p className="text-[11px] font-medium uppercase tracking-wider text-[#A8A8B8]">{label}</p>
-      <div className="flex max-w-56 flex-wrap items-center justify-center gap-2.5">
-        {options.map((opt, i) => (
-          <Dot
-            key={opt.id}
-            active={selected === i}
-            onClick={() => onSelect(i)}
-            label={opt.label}
-            style={
-              colored
-                ? { background: opt.face, boxShadow: selected === i ? `0 0 10px ${opt.face}` : 'none' }
-                : { background: selected === i ? 'linear-gradient(135deg,#7C5CFF,#A855F7)' : '#3a3b52' }
-            }
-          />
-        ))}
+    <div className="flex flex-col items-center gap-1.5">
+      <p className="text-[11px] font-medium uppercase tracking-wider text-[#A8A8B8]">
+        {label} · <span className="text-white/80">{options[selected].label}</span>
+      </p>
+      <div className="flex items-center gap-2.5">
+        <ArrowButton direction="left" onClick={prev} label={`이전 ${label}`} />
+        <div className="flex items-center gap-1.5">
+          {options.map((opt, i) => (
+            <Dot
+              key={opt.id}
+              active={selected === i}
+              onClick={() => onSelect(i)}
+              label={opt.label}
+              style={{ background: opt.face, boxShadow: selected === i ? `0 0 8px ${opt.face}` : 'none' }}
+            />
+          ))}
+        </div>
+        <ArrowButton direction="right" onClick={next} label={`다음 ${label}`} />
       </div>
     </div>
   )
@@ -62,9 +95,9 @@ export default function CharacterCustomizer({ avatar, onChange }) {
       </motion.div>
 
       <div className="flex flex-col gap-4">
-        <DotRow label="눈" options={EYES} selected={avatar.eyes} onSelect={update('eyes')} />
-        <DotRow label="입" options={MOUTHS} selected={avatar.mouth} onSelect={update('mouth')} />
-        <DotRow label="피부" options={THEMES} selected={avatar.theme} onSelect={update('theme')} colored />
+        <StepRow label="눈" options={EYES} selected={avatar.eyes} onSelect={update('eyes')} />
+        <StepRow label="입" options={MOUTHS} selected={avatar.mouth} onSelect={update('mouth')} />
+        <SkinRow label="피부" options={THEMES} selected={avatar.theme} onSelect={update('theme')} />
       </div>
     </motion.div>
   )

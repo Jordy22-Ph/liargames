@@ -128,10 +128,10 @@ export default function MainScreen({ onEnterLobby }) {
       <button
         type="button"
         onClick={() => setShowFeedback(true)}
-        className="absolute right-4 top-4 z-10 text-xs text-white/40 underline-offset-2 transition
+        className="absolute right-4 top-4 z-20 text-xs text-white/40 underline-offset-2 transition
           hover:text-white/70 hover:underline"
       >
-        건의사항이 있으면 눌러주세요
+        💬 건의사항이 있으면 눌러주세요
       </button>
 
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-8 px-6 py-16">
@@ -247,7 +247,16 @@ export default function MainScreen({ onEnterLobby }) {
       </div>
 
       <footer className="relative z-10 border-t border-white/10 py-4 text-center text-xs tracking-wide text-white/30">
-        Made by Jordy22-Ph · 라이어 게임
+        Made by{' '}
+        <a
+          href="https://github.com/Jordy22-Ph/liargames"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-white/50 underline-offset-2 transition hover:text-[#A855F7] hover:underline"
+        >
+          Jordy22-Ph
+        </a>{' '}
+        · 라이어 게임
       </footer>
     </div>
   )
